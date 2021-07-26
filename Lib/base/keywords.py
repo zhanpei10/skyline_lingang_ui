@@ -31,10 +31,10 @@ class KeyWords:
     '''
       页面元素相关操作的封装
     '''
-    driver = webdriver.Chrome()
+    # driver = webdriver.Chrome()
 
     def __init__(self, browser_type):
-        pass
+        self.driver = choose_browser(browser_type)
 
     def open(self, url):
         '''
