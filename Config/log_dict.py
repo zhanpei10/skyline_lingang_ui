@@ -32,68 +32,91 @@ simple_format = '[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d]%(message)
 test_format = '%(asctime)s] %(message)s'
 
 # 3、日志配置字典
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # log文件的目录
-LOG_DIR = os.path.join(BASE_DIR, 'Log')
-if not os.path.exists(LOG_DIR):
-    os.mkdir(LOG_DIR)
-LOG_NAME = time.strftime('%Y%m%d') + '_ui_auto_case.log'
-LOG_DIR = os.path.join(LOG_DIR, LOG_NAME)
+# BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # log文件的目录
+# LOG_DIR = os.path.join(BASE_DIR, 'Log')
+# if not os.path.exists(LOG_DIR):
+#     os.mkdir(LOG_DIR)
+# LOG_NAME = time.strftime('%Y%m%d') + '_ui_auto_case.log'
+# 日志路径
+LOG_DIR = None
 
-LOGGING_DIC = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    # 日志格式
-    'formatters': {
-        # 自定义的格式 可以是多个，stand simple test 名称可以修改
-        'standard': {
-            # 格式的基本样式，
-            'format': standard_format  # 可以先用变量进行定义
+
+# 设置日志路径
+def set_log_path(log_type):
+    '''
+    获取日志的存放路径
+    :param log_type:  日志级别
+    :return:
+    '''
+    base_dir = os.path.dirname(os.path.dirname(__file__))  # log文件的目录
+    log_dir = os.path.join(base_dir, 'Log', log_type)
+    if not os.path.exists(log_dir):
+        os.mkdir(log_dir)
+    log_name = time.strftime('%Y%m%d') + '_ui_auto_case.log'
+    # 设置日志配置文件当中的日志路径
+    global LOG_DIR
+    LOG_DIR = os.path.join(log_dir, log_name)
+
+
+def get_logging_dic():
+    # 配置字典
+    LOGGING_DIC = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        # 日志格式
+        'formatters': {
+            # 自定义的格式 可以是多个，stand simple test 名称可以修改
+            'standard': {
+                # 格式的基本样式，
+                'format': standard_format  # 可以先用变量进行定义
+            },
+            'simple': {
+                'format': simple_format
+            },
+            'test': {
+                'format': test_format
+            },
         },
-        'simple': {
-            'format': simple_format
+        'filters': {},
+        # 控制日志输出的位置 日志的接收者
+        'handlers': {
+            # 打印到终端的日志
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',  # 打印到屏幕
+                'formatter': 'simple'
+            },
+            # 打印到文件的日志,收集info及以上的日志
+            'default': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.RotatingFileHandler',  # 保存到文件,日志轮转
+                'formatter': 'standard',
+                # 可以定制日志文件路径
+                'filename': LOG_DIR,  # 日志文件
+                'maxBytes': 1024 * 1024 * 5,  # 日志大小 5M  文件的大小
+                'backupCount': 5,  # 保存几份
+                'encoding': 'utf-8',  # 日志文件的编码，再也不用担心中文log乱码了
+            },
+            # 'other': {
+            #     'level': 'DEBUG',
+            #     'class': 'logging.FileHandler',  # 保存到文件
+            #     'formatter': 'test',
+            #     'filename': 'a2.log',
+            #     'encoding': 'utf-8',
+            # },
         },
-        'test': {
-            'format': test_format
+        # 负责产生者
+        'loggers': {
+            # logging.getLogger(__name__)拿到的logger配置
+            '': {
+                'handlers': ['default', 'console'],  # 这里把上面定义的两个handler都加上，即log数据既写入文件又打印到屏幕
+                'level': 'DEBUG',  # loggers(第一层日志级别关限制)--->handlers(第二层日志级别关卡限制)
+                'propagate': False,  # 默认为True，向上（更高level的logger）传递，通常设置为False即可，否则会一份日志向上层层传递
+            },
         },
-    },
-    'filters': {},
-    # 控制日志输出的位置 日志的接收者
-    'handlers': {
-        # 打印到终端的日志
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',  # 打印到屏幕
-            'formatter': 'simple'
-        },
-        # 打印到文件的日志,收集info及以上的日志
-        'default': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',  # 保存到文件,日志轮转
-            'formatter': 'standard',
-            # 可以定制日志文件路径
-            'filename': LOG_DIR,  # 日志文件
-            'maxBytes': 1024 * 1024 * 5,  # 日志大小 5M  文件的大小
-            'backupCount': 5,  # 保存几份
-            'encoding': 'utf-8',  # 日志文件的编码，再也不用担心中文log乱码了
-        },
-        # 'other': {
-        #     'level': 'DEBUG',
-        #     'class': 'logging.FileHandler',  # 保存到文件
-        #     'formatter': 'test',
-        #     'filename': 'a2.log',
-        #     'encoding': 'utf-8',
-        # },
-    },
-    # 负责产生者
-    'loggers': {
-        # logging.getLogger(__name__)拿到的logger配置
-        '': {
-            'handlers': ['default', 'console'],  # 这里把上面定义的两个handler都加上，即log数据既写入文件又打印到屏幕
-            'level': 'DEBUG',  # loggers(第一层日志级别关限制)--->handlers(第二层日志级别关卡限制)
-            'propagate': False,  # 默认为True，向上（更高level的logger）传递，通常设置为False即可，否则会一份日志向上层层传递
-        },
-    },
-}
+    }
+    return LOGGING_DIC
+
 
 if __name__ == '__main__':
     print(os.path.dirname(os.path.dirname(__file__)))

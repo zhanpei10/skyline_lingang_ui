@@ -3,7 +3,7 @@ import configparser
 import os
 from selenium import webdriver
 from Lib.common.chrome_options import Options
-from Lib.common.ui_log import log
+from Lib.common.ui_log import error_log, normal_log
 
 
 # 获取项目的根路径
@@ -13,9 +13,43 @@ def get_path():
 
 # 读取配置文件信息，获得环境地址
 def get_url(environment, key):
+    '''
+
+    :param environment:  对应的环境
+    :param key:  环境下的配置
+    :return:
+    '''
     conf = configparser.ConfigParser()
     conf.read(get_path() + '/Config/environment.ini')
     return conf.get(environment.upper(), key)
+
+
+# 读取mysql配置信息
+def get_mysql_config(environment):
+    '''
+
+    :param environment:  环境信息
+    :return: 配置字典
+    '''
+    # 定义配置字典
+    config_dict = {
+        'host': None,
+        'port': None,
+        'user': None,
+        'passwd': None,
+        'charset': None,
+        'database': None,
+    }
+    # 读取配置文件
+    conf = configparser.ConfigParser()
+    conf.read(get_path() + '/Config/mysql_config.ini')
+    # 给配置字典赋值
+    for key in config_dict.keys():
+        if key == 'port':
+            config_dict[key] = int(conf.get(environment.upper(), key))
+        else:
+            config_dict[key] = conf.get(environment.upper(), key)
+    return config_dict
 
 
 # 选择浏览器
@@ -27,19 +61,18 @@ def choose_browser(browser_type=''):
     :return:
     '''
     if browser_type == 'chrome':
-        log().info('>>>正在加载{0}驱动'.format(browser_type))
+        normal_log().info('>>>正在加载{0}驱动'.format(browser_type))
         return webdriver.Chrome(options=Options().my_chrome_options())
     elif browser_type == 'firefox':
-        log().info('>>>正在加载{0}驱动'.format(browser_type))
+        normal_log().info('>>>正在加载{0}驱动'.format(browser_type))
         return webdriver.Firefox()
     elif browser_type == 'ie':
-        log().info('>>>正在加载{0}驱动'.format(browser_type))
+        normal_log().info('>>>正在加载{0}驱动'.format(browser_type))
         return webdriver.Ie()
     else:
-        log().info('>>>正在加载{0}驱动'.format('chrome'))
+        normal_log().info('>>>正在加载{0}驱动'.format('chrome'))
         return webdriver.Chrome(options=Options().my_chrome_options())
 
 
 if __name__ == '__main__':
-    print(get_path())
-    print(get_url('sit', 'sit_lg'))
+    print(get_mysql_config('SIT_MYSQL'))
