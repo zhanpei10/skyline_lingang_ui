@@ -245,6 +245,24 @@ class KeyWords:
             self.quite()
             raise e
 
+    def upload_by_exe(self, args, context=None):
+        '''
+        input元素的附件上传
+        :return:
+        '''
+        try:
+            normal_log().info('>>>>>开始上传{}附件'.format(context))
+            # 点击附件上传弹窗
+            self.click(args=args, context=context)
+            self.wait(2)
+            # 执行对应的程序
+            path = get_path() + '/Resource/file_exe/test.exe'
+            os.system(path)
+        except Exception as e:
+            error_log().debug('>>>上传{}附件失败'.format(context))
+            error_log().debug('>>>>>{}'.format(e))
+            raise e
+
 
 if __name__ == '__main__':
     print(time.strftime('%Y-%m-%d %H:%M:%S'))

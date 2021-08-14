@@ -4,6 +4,7 @@ import os
 from selenium import webdriver
 from Lib.common.chrome_options import Options
 from Lib.common.ui_log import error_log, normal_log
+import time
 
 
 # 获取项目的根路径
@@ -74,5 +75,22 @@ def choose_browser(browser_type=''):
         return webdriver.Chrome(options=Options().my_chrome_options())
 
 
+# 定制化时间格式
+def get_time(format_time, number):
+    '''
+    返回特定格式的时间字符串
+    :param format_time:  想要的时间格式
+    :param number:  与当前时间的差值
+    :return:
+    '''
+    try:
+        time_num = time.time() + (number * 24 * 60 * 60)
+        # 将时间转化为格式化时间
+        return time.strftime(format_time, time.localtime(time_num))
+    except Exception as e:
+        error_log().debug('>>>>>时间格式错误{}'.format(format_time))
+        raise e
+
+
 if __name__ == '__main__':
-    print(get_mysql_config('SIT_MYSQL'))
+    print(get_time('%Y-%m-%d', 2))

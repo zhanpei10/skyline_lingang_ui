@@ -7,7 +7,7 @@ from Lib.common.common_function import *
 from Lib.base.page_object.login_page import LonginPage
 
 
-class SpecialRectification(KeyWords):
+class SpecialRectificationList(KeyWords):
     '''
     专项整治类
     '''
@@ -39,6 +39,34 @@ class SpecialRectification(KeyWords):
     update_work_method = (By.XPATH, '//div[text()="工作方案"]')  # 修改页面工作方案
     update_sure = (By.XPATH, '//span[text()="确认"]')
 
+    # 专项整治流转
+    task_issued_by = (By.XPATH, '//span[text()="任务下发"]')  # 任务下发
+    send_user = (By.XPATH, '//span[text()="请选择发送人员"]')  # 发送人员
+    send_user_value = (By.XPATH, '//body/div[2]//ul/li[3]/label/span/span')  # 选择要发送的人
+    send_user_sure = (By.XPATH, '//body/div[2]//span[text()="确定"]')  # 选择确定
+    flow = (By.XPATH, '//span[text()="流转"]')  # 事件流转
+
+    # 添加工作日志
+    go_add = (By.XPATH, '//main//span[text()="去添加"]')  # 去添加
+    template_name = (By.XPATH, '//label[text()="模板名称"]/../div/div/input')  # 模板名称
+    upload_click = (By.XPATH, '//span[text()="上传模板"]')  # 上传模板
+    next_step = (By.XPATH, '//span[text()="下一步"]')
+    # 选择需要添加的人员
+    need_people = (By.XPATH, '//span[text()="请选择需要提交人员"]')
+    need_people_value = (By.XPATH, '//body/div[3]//ul/li[3]/label/span/span')
+    need_people_sure = (By.XPATH, '//body/div[3]//span[text()="确定"]')
+    # 选择需要查看的人
+    look_people = (By.XPATH, '//body/div[1]//span[text()="请选择可以查看人员"]')
+    look_people_value = (By.XPATH, '//body/div[4]//ul/li[3]/label/span/span')
+    look_people_sure = (By.XPATH, '//body/div[4]//span[text()="确定"]')
+
+    # 选择时间
+    start_time = (By.XPATH, '//input[@placeholder="开始日期"]')
+    end_time = (By.XPATH, '//input[@placeholder="结束日期"]')
+    save_time = (By.XPATH, '//label[text() ="统计规则"]')
+    # 点击确认
+    work_log_sure = (By.XPATH, '//main/div/div[2]/div[2]/div/div[2]/div/form[2]/div[5]/button[3]/span')
+
     def special_rectification_filter(self):
         '''
         专项整治筛选相关的功能测试
@@ -66,7 +94,7 @@ class SpecialRectification(KeyWords):
         self.wait(2)
         #  使用关键字进行搜索
         self.click(args=self.search_name, context='搜索框')
-        self.input_value(self.search_name, text='测试', context='搜索框')
+        self.input_value(self.search_name, text='专项整治', context='搜索框')
         self.click(self.search_button, context='搜索按钮')
         self.wait(2)
         # 点击收藏按钮
@@ -74,8 +102,9 @@ class SpecialRectification(KeyWords):
         self.wait(1)
         self.click(self.collection_only_button, context='只看收藏')
         self.wait(2)
+        # 添加工作日志
 
-    def special_rectification_detail(self):
+    def special_rectification_detail_and_update(self):
         '''
         查看专项整治详情
         :return:
@@ -105,10 +134,66 @@ class SpecialRectification(KeyWords):
         self.click(args=self.update_sure, context='确认')
         self.wait(2)
 
+    def special_rectification_detail_flow(self):
+        '''
+        查看详情并流转
+        :return:
+        '''
+        self.open(self.url)
+        self.click(2)
+        self.click(args=self.url_img, context='专项整治封面')
+        self.wait(1)
+        self.click(args=self.task_issued_by, context='任务下发')
+        self.wait(1)
+        self.click(args=self.send_user, context="发送人员")
+        self.wait(1)
+        self.click(args=self.send_user_value, context='发送人')
+        self.wait(1)
+        self.click(args=self.send_user_sure, context='确定')
+        self.wait(2)
+        self.click(args=self.flow, context='流转')
+        self.wait(2)
+
+    def special_rectification_add_work_log(self):
+        '''
+        添加工作日志
+        :return:
+        '''
+        self.open(url=self.url)
+        self.wait(2)
+        self.click(args=self.url_img, context='专项整治封面')
+        self.click(args=self.work_log, context='工作日志')
+        self.wait(1)
+        self.click(args=self.go_add, context='去添加')
+        # 添加日志
+        self.wait(1)
+        self.input_value(args=self.template_name, text='测试新建的模板名称', context='模板名称')
+        # 上传附件
+        self.upload_by_exe(args=self.upload_click, context="上传模板")
+        self.wait(1)
+        self.click(args=self.next_step, context='下一步')
+        # 选择需要添加的人员
+        self.click(args=self.need_people, context='需要提交的人')
+        self.click(args=self.need_people_value, context="选择对应的人")
+        self.click(args=self.need_people_sure, context='点击确定')
+        # 选择需要查看人
+        self.click(args=self.look_people, context='需要查看的人')
+        self.click(args=self.look_people_value, context='需要查看的对应的人')
+        self.click(args=self.look_people_sure, context='点击确定')
+        # 选择时间
+        self.input_value(args=self.start_time, text=get_time('%Y-%m-%d', 2), context='输入开始时间')
+        self.wait(1)
+        self.input_value(args=self.end_time, text=get_time('%Y-%m-%d', 3), context='输入结束时间')
+        self.wait(1)
+        self.click(args=self.save_time, context='保存时间')
+        self.wait(1)
+        self.click(args=self.work_log_sure, context='确定')
+        self.wait(2)
+
 
 if __name__ == '__main__':
     driver = choose_browser()
     L = LonginPage(driver)
     L.login('kobeAdmin002', 'kobe8888')
-    case = SpecialRectification(driver)
-    case.special_rectification_detail()
+    case = SpecialRectificationList(driver)
+    case.special_rectification_add_work_log()
