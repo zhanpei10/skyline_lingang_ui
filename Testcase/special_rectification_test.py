@@ -2,15 +2,13 @@
 专项整治功能测试
 '''
 import unittest
-from ddt import ddt, data, unpack
 from Lib.common.common_function import *
 from Lib.base.page_object.login_page import LonginPage
-from Lib.base.page_object.special_rectification_list import SpecialRectificationList
-from Lib.base.page_object.special_rectification_add import SpecialRectificationAdd
+from Lib.base.page_object.special.special_rectification_list import SpecialRectificationList
+from Lib.base.page_object.special.special_rectification_add import SpecialRectificationAdd
 from selenium.webdriver.common.by import By
 from Lib.base.keywords import KeyWords
-import pytest
-from Lib.common.ui_log import error_log, normal_log
+from Lib.common.ui_log import normal_log
 
 
 class SpecialRectificationTest(unittest.TestCase):
@@ -23,17 +21,20 @@ class SpecialRectificationTest(unittest.TestCase):
         cls.login = LonginPage(cls.driver)
         cls.special_rectification_list = SpecialRectificationList(cls.driver)
         cls.special_rectification_add = SpecialRectificationAdd(cls.driver)
+        cls.login.login('kobeAdmin002', 'kobe8888')
 
     @classmethod
     def tearDownClass(cls) -> None:
-        normal_log().info('>>>>>事件管理页面测试结束')
+        normal_log().info('>>>>>专项整治页面测试结束')
+        cls.login.login_out()
         cls.driver.quit()
 
     def setUp(self) -> None:
-        self.login.login('kobeAdmin002', 'kobe8888')
+        normal_log().info('>>>>>>>>>>>>>>>>>>>当前用例测试开始>>>>>>>>>>>>>>>>>>>>>>')
 
     def tearDown(self) -> None:
-        self.login.login_out()
+        # self.login.login_out()
+        normal_log().info('>>>>>>>>>>>>>>>>>>>当前用例测试结束>>>>>>>>>>>>>>>>>>>>>>')
 
     def test_1_special_rectification_add_to_draft(self):
         '''

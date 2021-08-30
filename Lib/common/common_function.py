@@ -76,7 +76,7 @@ def choose_browser(browser_type=''):
 
 
 # 定制化时间格式
-def get_time(format_time, number):
+def get_time(format_time, number=None):
     '''
     返回特定格式的时间字符串
     :param format_time:  想要的时间格式
@@ -84,13 +84,18 @@ def get_time(format_time, number):
     :return:
     '''
     try:
-        time_num = time.time() + (number * 24 * 60 * 60)
-        # 将时间转化为格式化时间
-        return time.strftime(format_time, time.localtime(time_num))
+        if number is not None:
+            time_num = time.time() + (number * 24 * 60 * 60)
+            # 将时间转化为格式化时间
+            return time.strftime(format_time, time.localtime(time_num))
+        else:
+            time_num = time.time()
+            # 将时间转化为格式化时间
+            return time.strftime(format_time, time.localtime(time_num))
     except Exception as e:
         error_log().debug('>>>>>时间格式错误{}'.format(format_time))
         raise e
 
 
 if __name__ == '__main__':
-    print(get_time('%Y-%m-%d', 2))
+    print(get_time('%Y-%m-%d', -20))

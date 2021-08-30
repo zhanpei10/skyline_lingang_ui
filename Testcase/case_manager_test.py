@@ -1,12 +1,11 @@
 # 事件管理页面测试
 import unittest
-from ddt import ddt, data, unpack
+from ddt import ddt
 from Lib.common.common_function import *
 from Lib.base.page_object.login_page import LonginPage
-from Lib.base.page_object.case_manager import CaseManager
+from Lib.base.page_object.case_manager.case_manager import CaseManager
 from selenium.webdriver.common.by import By
 from Lib.base.keywords import KeyWords
-import pytest
 from Lib.common.ui_log import error_log, normal_log
 
 
@@ -24,13 +23,16 @@ class CaseManagerTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls) -> None:
         normal_log().info('>>>>>事件管理页面测试结束')
+        cls.login.login_out()
         cls.driver.quit()
 
     def setUp(self) -> None:
         self.login.login('kobeAdmin002', 'kobe8888')
+        normal_log().info('>>>>>>>>>>>>>>>>>>>当前用例测试开始>>>>>>>>>>>>>>>>>>>>>>')
 
     def tearDown(self) -> None:
         self.login.login_out()
+        normal_log().info('>>>>>>>>>>>>>>>>>>>当前用例测试结束>>>>>>>>>>>>>>>>>>>>>>')
 
     def test_look_by_case_from(self):
         normal_log().info('>>>>>事件来源筛选测试：')

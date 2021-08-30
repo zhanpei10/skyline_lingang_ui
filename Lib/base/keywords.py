@@ -193,6 +193,7 @@ class KeyWords:
         try:
             text = self.get_text(args=args, context=context)
             assert assert_data in text, '断言失败，没有获得对应的文本信息'
+            normal_log().info('--------------{}执行成功----------------'.format(context))
         except AssertionError as e:
             error_log().debug('>>>>>>{}执行失败'.format(context))
             error_log().debug(e)
@@ -206,6 +207,25 @@ class KeyWords:
             time1_str2 = self.get_text(args=args2, context=context)
             time2 = time.mktime(time.strptime(time1_str2.strip(), '%Y-%m-%d %H:%M:%S'))
             assert int(time1) > int(time2), '排序错误'
+            normal_log().info('--------------{}执行成功----------------'.format(context))
+        except AssertionError as e:
+            error_log().debug('>>>>>>{}执行失败'.format(context))
+            error_log().debug(e)
+            self.get_error_picture(context)
+            raise e
+
+    def make_assert_by_text_different(self, args, assert_data, context=None):
+        '''
+        当文本信息不相等时的断言
+        :param args:
+        :param assert_data:
+        :param context:
+        :return:
+        '''
+        try:
+            text = self.get_text(args=args, context=context)
+            assert assert_data not in text, '断言失败，获取的文本信息包含断言信息'
+            normal_log().info('--------------{}执行成功----------------'.format(context))
         except AssertionError as e:
             error_log().debug('>>>>>>{}执行失败'.format(context))
             error_log().debug(e)
@@ -247,7 +267,7 @@ class KeyWords:
 
     def upload_by_exe(self, args, context=None):
         '''
-        input元素的附件上传
+        非input元素的附件上传
         :return:
         '''
         try:
@@ -261,6 +281,22 @@ class KeyWords:
         except Exception as e:
             error_log().debug('>>>上传{}附件失败'.format(context))
             error_log().debug('>>>>>{}'.format(e))
+            raise e
+
+    def upload_file_to_input(self, args, context=None):
+        '''
+        input元素类型附件上传
+        :param args:
+        :param context:
+        :return:
+        '''
+        try:
+            normal_log().info('>>>>>上传附件')
+            filename = get_path() + '/Resource/photo/auto_photo.png'
+            self.locator(args, context).send_keys(filename)
+        except Exception as e:
+            error_log().debug('>>>>>上传{}附件失败'.format(context))
+            error_log().debug('>>>>>>{}'.format(e))
             raise e
 
 
