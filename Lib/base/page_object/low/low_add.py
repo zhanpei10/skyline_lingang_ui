@@ -41,6 +41,7 @@ class LowAdd(KeyWords):
         self.click(args=self.choose, context="浦东城管")
         self.wait(1)
         self.click(args=self.create, context="新建")
+        self.wait(2)
 
 
 if __name__ == '__main__':
